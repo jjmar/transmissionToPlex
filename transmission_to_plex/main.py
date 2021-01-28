@@ -1,21 +1,32 @@
 from transmission_rpc import Client
-from transmission_to_plex import classifier
+import classifier
+from config import Config
 
 
-def run():
-    print('Hello')
-    client = Client(host='localhost', port=9000)
-    completed_torrents = [t for t in client.get_torrents() if t.progress == 100.0]
+class Main():
+    def __init__(self, config):
+        self.config = config
+        self.client = Client(host=config.rpc_host,
+                             port=config.rpc_port,
+                             username=config.rpc_user,
+                             password=config.rpc_pass)
 
-    for torrent in completed_torrents:
-        type_of_torrent = classifier.classify_downloaded_content(torrent.files())
-        move_files_to_plex_folder(client, torrent, type_of_torrent)
-        client.remove_torrent([torrent.id])
+    def run(self):
+        completed_torrents = [t for t in self.client.get_torrents() if t.progress == 100.0]
+
+        for torrent in completed_torrents:
+            type_of_torrent = classifier.classify_downloaded_content(torrent.files())
+            self.move_files_to_plex_folder(torrent, type_of_torrent)
+            self.client.remove_torrent([torrent.id])
+
+    def move_files_to_plex_folder(self, torrent, type):
+        target_directory = self.config.tv_dir if type == 'tv' else self.config.movies_dir
+
+        self.client.move_torrent_data([torrent.id], target_directory)
 
 
-def move_files_to_plex_folder(client, torrent, type):
-    TV_SHOW_DIR = '/Users/justin/Desktop/plex/target/tv'
-    MOVIE_DIR = '/Users/justin/Desktop/plex/target/movie'
-    target_directory = TV_SHOW_DIR if type == 'tv' else MOVIE_DIR
+if __name__ == "__main__":
+    main = Main(Config())
+    main.run()
 
-    client.move_torrent_data([torrent.id], target_directory)
+
