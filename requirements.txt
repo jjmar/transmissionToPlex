@@ -1,0 +1,10 @@
+certifi==2020.12.5
+chardet==4.0.0
+idna==3.1
+multidict==5.1.0
+pycparser==2.20
+requests==2.25.1
+transmission-rpc==3.2.2
+typing-extensions==3.7.4.3
+urllib3==1.26.3
+yarl==1.6.3
