@@ -1,9 +1,10 @@
 from transmission_rpc import Client
+
 import classifier
-from config import Config
+import config
 
 
-class Main():
+class Main:
     def __init__(self, config):
         self.config = config
         self.client = Client(host=config.rpc_host,
@@ -20,13 +21,14 @@ class Main():
             self.client.remove_torrent([torrent.id])
 
     def move_files_to_plex_folder(self, torrent, type):
-        target_directory = self.config.tv_dir if type == 'tv' else self.config.movies_dir
+        target_directory = self.config.movies_dir if type == classifier.MediaType.MOVIE else self.config.tv_dir
 
         self.client.move_torrent_data([torrent.id], target_directory)
 
 
 if __name__ == "__main__":
-    main = Main(Config())
+    config = config.Config()
+    main = Main(config)
     main.run()
 
 
