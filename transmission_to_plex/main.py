@@ -1,5 +1,4 @@
 from transmission_rpc import Client
-
 import classifier
 import config
 
@@ -21,7 +20,10 @@ class Main:
             self.client.remove_torrent([torrent.id])
 
     def move_files_to_plex_folder(self, torrent, type):
-        target_directory = self.config.movies_dir if type == classifier.MediaType.MOVIE else self.config.tv_dir
+        if type == classifier.MediaType.MOVIE:
+            target_directory = self.config.target_movie_dir
+        else:
+            target_directory = self.config.target_tv_dir
 
         self.client.move_torrent_data([torrent.id], target_directory)
 
