@@ -15,7 +15,7 @@ class Main:
         completed_torrents = [t for t in self.client.get_torrents() if t.progress == 100.0]
 
         for torrent in completed_torrents:
-            type_of_torrent = classifier.classify_downloaded_content(torrent.files())
+            type_of_torrent = classifier.classify_downloaded_content(torrent.get_files())
             self.move_files_to_plex_folder(torrent, type_of_torrent)
             self.client.remove_torrent([torrent.id])
 
